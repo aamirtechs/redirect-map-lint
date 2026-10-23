@@ -1,5 +1,6 @@
 # redirect-map-lint
 Live page: https://aamirtechs.github.io/redirect-map-lint/
+Use it in your browser: the Pages site above runs the full tool locally, no install needed.
 
 Validate a store migration redirect CSV before import: chains, loops, duplicate sources, self-redirects and homepage dumping, with chains collapsed to final destinations automatically. Outputs a fixed CSV and a report.
 
