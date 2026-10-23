@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>redirect-map-lint: validate a migration redirect CSV before import</title>
+<meta name="description" content="Validate a redirect CSV before import: chains collapsed, loops and conflicting duplicates excluded, self-redirects and normalisation collisions reported, plus a homepage dumping warning.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&family=Sora:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0a1f44; --navy2:#10295a; --gold:#c9a227; --gold2:#e6c65c;
+  --ink:#1c2434; --muted:#5a6478; --bg:#f6f7fa; --card:#ffffff; --line:#e3e7ef;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',sans-serif;color:var(--ink);background:var(--bg);line-height:1.6}
+h1,h2,h3{font-family:'Sora',system-ui,sans-serif;line-height:1.25}
+.hero{background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 100%);color:#fff;padding:64px 20px 56px;text-align:center}
+.hero .tag{display:inline-block;border:1px solid var(--gold);color:var(--gold2);border-radius:999px;padding:4px 14px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:20px}
+.hero h1{font-size:44px;font-weight:700;margin-bottom:14px}
+.hero p{max-width:720px;margin:0 auto 28px;color:#d7deee;font-size:18px}
+.btn{display:inline-block;background:var(--gold);color:#14100a;font-weight:700;text-decoration:none;padding:12px 26px;border-radius:8px;font-size:16px}
+.btn:hover{background:var(--gold2)}
+.wrap{max-width:880px;margin:0 auto;padding:40px 20px 8px}
+section{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:28px 30px;margin-bottom:24px}
+section h2{font-size:22px;color:var(--navy);margin-bottom:14px;border-bottom:3px solid var(--gold);display:inline-block;padding-bottom:4px}
+section ul{padding-left:22px}
+section li{margin-bottom:8px}
+pre{background:var(--navy);color:#eef1f8;border-radius:10px;padding:18px 20px;overflow-x:auto;font-size:14px;line-height:1.55;margin:12px 0}
+code{font-family:'SFMono-Regular',Consolas,'Liberation Mono',monospace}
+p.note{color:var(--muted);font-size:15px}
+footer{background:var(--navy);color:#cfd8ec;text-align:center;padding:36px 20px 40px;margin-top:16px}
+footer p{margin-bottom:10px}
+footer a{color:var(--gold2);text-decoration:none;font-weight:600}
+footer a:hover{text-decoration:underline}
+footer .links a{margin:0 10px}
+@media (max-width:640px){
+  .hero h1{font-size:32px}
+  .hero p{font-size:16px}
+  section{padding:22px 20px}
+}
+</style>
+</head>
+<body>
+<header class="hero">
+  <span class="tag">Free open source tool</span>
+  <h1>redirect-map-lint</h1>
+  <p>Validate a store migration redirect CSV before import: chains, loops, duplicate sources, self-redirects and homepage dumping, with chains collapsed to final destinations automatically. Outputs a fixed CSV and a report.</p>
+  <a class="btn" href="https://github.com/aamirtechs/redirect-map-lint">View source on GitHub</a>
+</header>
+<main class="wrap">
+  <section>
+    <h2>What it does</h2>
+    <ul>
+      <li>Redirect chains detected and collapsed, so every source points at the final destination</li>
+      <li>Loops, including two-node loops and longer cycles, excluded from the fixed CSV with a reason</li>
+      <li>Duplicate sources split into exact duplicates and conflicting duplicates, and conflicting rows are excluded</li>
+      <li>Self-redirects and normalisation collisions, where case, a trailing slash or percent encoding makes different looking sources resolve to the same path</li>
+      <li>Homepage dumping warning when the share of targets pointing at / passes a configurable threshold, 30 percent by default</li>
+    </ul>
+  </section>
+  <section>
+    <h2>Install and usage</h2>
+    <p class="note">Requires Node.js 20 or later. There are no dependencies to install.</p>
+    <pre><code>git clone https://github.com/aamirtechs/redirect-map-lint.git
+cd redirect-map-lint
+node src/cli.js examples/redirects.csv --out-dir output</code></pre>
+    <p class="note">Input is a two column CSV with source and target headers (from/to and old/new are also accepted, and a headerless file is read as source then target). Output is fixed-redirects.csv and report.md. Fully offline, no network calls.</p>
+  </section>
+</main>
+<footer>
+  <p>Built by Amir Hussain, operations manager and founder of AamirTechs.</p>
+  <p class="links"><a href="https://aamirtechs.com">AamirTechs: operations, customer support and e-commerce services</a> <a href="https://github.com/aamirtechs">More open source tools</a></p>
+</footer>
+</body>
+</html>
