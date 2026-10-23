@@ -4,40 +4,77 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>redirect-map-lint: validate a migration redirect CSV before import</title>
-<meta name="description" content="Validate a redirect CSV before import: chains collapsed, loops and conflicting duplicates excluded, self-redirects and normalisation collisions reported, plus a homepage dumping warning.">
+<meta name="description" content="Validate a store migration redirect CSV before import: chains, loops, duplicate sources, self-redirects and homepage dumping, with chains collapsed to">
+<meta name="keywords" content="redirects, seo, shopify, woocommerce, migration, url, csv, linter, cli, nodejs">
+<meta name="author" content="Amir Hussain">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://aamirtechs.github.io/redirect-map-lint/">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<meta name="theme-color" content="#0b1f3a">
+<meta property="og:type" content="website">
+<meta property="og:title" content="redirect-map-lint: validate a migration redirect CSV before import">
+<meta property="og:description" content="Validate a store migration redirect CSV before import: chains, loops, duplicate sources, self-redirects and homepage dumping, with chains collapsed to">
+<meta property="og:url" content="https://aamirtechs.github.io/redirect-map-lint/">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="redirect-map-lint: validate a migration redirect CSV before import">
+<meta name="twitter:description" content="Validate a store migration redirect CSV before import: chains, loops, duplicate sources, self-redirects and homepage dumping, with chains collapsed to">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "redirect-map-lint",
+  "applicationCategory": "DeveloperApplication",
+  "operatingSystem": "Cross-platform",
+  "url": "https://aamirtechs.github.io/redirect-map-lint/",
+  "description": "Validate a store migration redirect CSV before import: chains, loops, duplicate sources, self-redirects and homepage dumping, with chains collapsed to",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "author": {
+    "@type": "Person",
+    "name": "Amir Hussain",
+    "url": "https://aamirtechs.com"
+  }
+}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&family=Sora:wght@600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --navy:#0a1f44; --navy2:#10295a; --gold:#c9a227; --gold2:#e6c65c;
-  --ink:#1c2434; --muted:#5a6478; --bg:#f6f7fa; --card:#ffffff; --line:#e3e7ef;
+  --navy:#0b1f3a; --navy2:#123058; --gold:#d4a72c; --gold2:#e9c767;
+  --ink:#1c2434; --muted:#5a6478; --bg:#f4f6fa; --card:#ffffff; --line:#e2e7f0;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',sans-serif;color:var(--ink);background:var(--bg);line-height:1.6}
+body{font-family:'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',sans-serif;color:var(--ink);background:var(--bg);line-height:1.65}
 h1,h2,h3{font-family:'Sora',system-ui,sans-serif;line-height:1.25}
-.hero{background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 100%);color:#fff;padding:64px 20px 56px;text-align:center}
-.hero .tag{display:inline-block;border:1px solid var(--gold);color:var(--gold2);border-radius:999px;padding:4px 14px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:20px}
-.hero h1{font-size:44px;font-weight:700;margin-bottom:14px}
-.hero p{max-width:720px;margin:0 auto 28px;color:#d7deee;font-size:18px}
-.btn{display:inline-block;background:var(--gold);color:#14100a;font-weight:700;text-decoration:none;padding:12px 26px;border-radius:8px;font-size:16px}
+.hero{background:linear-gradient(140deg,var(--navy) 0%,var(--navy2) 70%,#1a4479 100%);color:#fff;padding:76px 20px 64px;text-align:center;border-bottom:4px solid var(--gold)}
+.hero .tag{display:inline-block;border:1px solid var(--gold);color:var(--gold2);border-radius:999px;padding:5px 16px;font-size:12.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;margin-bottom:22px}
+.hero h1{font-size:46px;font-weight:700;letter-spacing:-.01em;margin-bottom:16px}
+.hero p{max-width:740px;margin:0 auto 30px;color:#d9e1f2;font-size:18.5px}
+.btn{display:inline-block;background:var(--gold);color:#171106;font-weight:700;text-decoration:none;padding:13px 28px;border-radius:9px;font-size:16px;box-shadow:0 6px 18px rgba(0,0,0,.25)}
 .btn:hover{background:var(--gold2)}
-.wrap{max-width:880px;margin:0 auto;padding:40px 20px 8px}
-section{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:28px 30px;margin-bottom:24px}
-section h2{font-size:22px;color:var(--navy);margin-bottom:14px;border-bottom:3px solid var(--gold);display:inline-block;padding-bottom:4px}
-section ul{padding-left:22px}
-section li{margin-bottom:8px}
-pre{background:var(--navy);color:#eef1f8;border-radius:10px;padding:18px 20px;overflow-x:auto;font-size:14px;line-height:1.55;margin:12px 0}
+.wrap{max-width:920px;margin:0 auto;padding:44px 20px 10px}
+section{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:30px 32px;margin-bottom:26px;box-shadow:0 2px 10px rgba(11,31,58,.05)}
+section h2{font-size:22px;color:var(--navy);margin-bottom:16px}
+section h2::after{content:"";display:block;width:52px;height:3px;background:var(--gold);border-radius:2px;margin-top:7px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.card{border:1px solid var(--line);border-radius:10px;padding:16px 18px;background:#fbfcfe;font-size:15.5px}
+.card::before{content:"";display:block;width:26px;height:3px;background:var(--gold);border-radius:2px;margin-bottom:9px}
+pre{background:var(--navy);color:#edf1f9;border-radius:10px;padding:19px 21px;overflow-x:auto;font-size:14px;line-height:1.6;margin:14px 0;box-shadow:inset 0 0 0 1px rgba(212,167,44,.35)}
 code{font-family:'SFMono-Regular',Consolas,'Liberation Mono',monospace}
-p.note{color:var(--muted);font-size:15px}
-footer{background:var(--navy);color:#cfd8ec;text-align:center;padding:36px 20px 40px;margin-top:16px}
+p.note{color:var(--muted);font-size:15.5px}
+footer{background:var(--navy);color:#cdd8ee;text-align:center;padding:40px 20px 44px;margin-top:20px;border-top:4px solid var(--gold)}
 footer p{margin-bottom:10px}
 footer a{color:var(--gold2);text-decoration:none;font-weight:600}
 footer a:hover{text-decoration:underline}
 footer .links a{margin:0 10px}
-@media (max-width:640px){
-  .hero h1{font-size:32px}
-  .hero p{font-size:16px}
-  section{padding:22px 20px}
+@media (max-width:680px){
+  .hero h1{font-size:33px}
+  .hero p{font-size:16.5px}
+  section{padding:24px 20px}
+  .grid{grid-template-columns:1fr}
 }
 </style>
 </head>
@@ -51,13 +88,13 @@ footer .links a{margin:0 10px}
 <main class="wrap">
   <section>
     <h2>What it does</h2>
-    <ul>
-      <li>Redirect chains detected and collapsed, so every source points at the final destination</li>
-      <li>Loops, including two-node loops and longer cycles, excluded from the fixed CSV with a reason</li>
-      <li>Duplicate sources split into exact duplicates and conflicting duplicates, and conflicting rows are excluded</li>
-      <li>Self-redirects and normalisation collisions, where case, a trailing slash or percent encoding makes different looking sources resolve to the same path</li>
-      <li>Homepage dumping warning when the share of targets pointing at / passes a configurable threshold, 30 percent by default</li>
-    </ul>
+    <div class="grid">
+      <div class="card">Redirect chains detected and collapsed, so every source points at the final destination</div>
+      <div class="card">Loops, including two-node loops and longer cycles, excluded from the fixed CSV with a reason</div>
+      <div class="card">Duplicate sources split into exact duplicates and conflicting duplicates, and conflicting rows are excluded</div>
+      <div class="card">Self-redirects and normalisation collisions, where case, a trailing slash or percent encoding makes different looking sources resolve to the same path</div>
+      <div class="card">Homepage dumping warning when the share of targets pointing at / passes a configurable threshold, 30 percent by default</div>
+    </div>
   </section>
   <section>
     <h2>Install and usage</h2>
